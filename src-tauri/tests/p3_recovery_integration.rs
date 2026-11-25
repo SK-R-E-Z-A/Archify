@@ -26,7 +26,7 @@ type SharedOrch = Arc<Mutex<Orchestrator>>;
 fn scratch_dir(tag: &str) -> PathBuf {
     let dir = std::env::temp_dir().join(format!("archify_p3_{tag}_{}", uuid::Uuid::new_v4()));
     std::fs::create_dir_all(&dir).expect("failed to create scratch dir");
-    dir
+    dunce::canonicalize(&dir).unwrap_or(dir)
 }
 
 fn test_config() -> ProviderConfigInput {

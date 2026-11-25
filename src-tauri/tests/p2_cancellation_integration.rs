@@ -33,7 +33,7 @@ fn scratch_dir(tag: &str) -> PathBuf {
     let dir = base.join(format!("archify_p2_{tag}_{}", uuid::Uuid::new_v4()));
     std::fs::create_dir_all(&dir)
         .unwrap_or_else(|e| panic!("failed to create scratch dir {dir:?}: {e}"));
-    dir
+    dunce::canonicalize(&dir).unwrap_or(dir)
 }
 
 async fn setup_orch(tag: &str) -> (SharedOrch, PathBuf) {
