@@ -2,6 +2,7 @@ pub mod cloud_http;
 pub mod presets;
 pub mod process_cli;
 pub mod test_adapter;
+#[cfg(windows)]
 pub mod windows_job;
 
 use crate::models::{ExecutorResult, Plan, ReviewerResponse, VerificationResult};

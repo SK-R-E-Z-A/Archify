@@ -1,3 +1,4 @@
+#![cfg(windows)]
 use std::os::windows::ffi::OsStrExt;
 use windows::Win32::Foundation::{CloseHandle, HANDLE};
 use windows::Win32::System::JobObjects::{
