@@ -706,6 +706,7 @@ mod tests {
         dir
     }
 
+    #[cfg(windows)]
     #[tokio::test]
     async fn run_process_captures_stdout_stderr_exit_code_and_duration() {
         let mut cmd = Command::new("cmd");
@@ -729,6 +730,7 @@ mod tests {
         assert!(err.contains("archify_definitely_missing_executable_12345") || err.len() > 10);
     }
 
+    #[cfg(windows)]
     #[tokio::test]
     async fn run_process_times_out_and_returns_partial_structured_output() {
         let mut cmd = Command::new("cmd");
@@ -752,6 +754,7 @@ mod tests {
         );
     }
 
+    #[cfg(windows)]
     #[tokio::test]
     async fn run_process_cancellation_returns_actionable_error() {
         let (tx, mut rx) = watch::channel(false);
@@ -767,6 +770,7 @@ mod tests {
         assert!(err.to_lowercase().contains("cancel"));
     }
 
+    #[cfg(windows)]
     #[tokio::test]
     async fn run_process_bounds_large_output_without_losing_small_output_marker() {
         let mut cmd = Command::new("powershell");
@@ -781,6 +785,8 @@ mod tests {
         assert!(out.stdout.len() <= 700);
     }
 
+    #[cfg(windows)]
+    #[cfg(windows)]
     #[tokio::test]
     async fn executor_prefixed_stdin_delivers_prompt_to_process() {
         let root = temp_root("stdin");
@@ -820,6 +826,8 @@ mod tests {
         let _ = std::fs::remove_dir_all(root);
     }
 
+    #[cfg(windows)]
+    #[cfg(windows)]
     #[tokio::test]
     async fn executor_argument_delivery_passes_prompt_as_argument() {
         let root = temp_root("arg");
@@ -851,6 +859,7 @@ mod tests {
         let _ = std::fs::remove_dir_all(root);
     }
 
+    #[cfg(windows)]
     #[tokio::test]
     async fn executor_nonzero_exit_is_reported_not_treated_as_success() {
         let root = temp_root("nonzero");
@@ -876,6 +885,7 @@ mod tests {
         let _ = std::fs::remove_dir_all(root);
     }
 
+    #[cfg(windows)]
     #[tokio::test]
     async fn executor_returns_explicit_cli_usage_from_structured_stdout() {
         let root = tempfile::tempdir().unwrap();
@@ -920,6 +930,7 @@ mod tests {
         );
     }
 
+    #[cfg(windows)]
     #[tokio::test]
     async fn executor_does_not_report_usage_from_truncated_cli_output() {
         let root = tempfile::tempdir().unwrap();
