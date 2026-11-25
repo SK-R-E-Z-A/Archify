@@ -1064,7 +1064,10 @@ mod tests {
         let dir = temp_dir("scope_change");
         let project = dir.join("proj");
         fs::create_dir_all(&project).unwrap();
-        let root = dunce::canonicalize(&project).unwrap().to_string_lossy().to_string();
+        let root = dunce::canonicalize(&project)
+            .unwrap()
+            .to_string_lossy()
+            .to_string();
         let mut store = InstructionStoreFile::default();
         let rec = upsert_instruction(
             &mut store,
