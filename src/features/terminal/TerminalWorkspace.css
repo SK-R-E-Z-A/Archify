@@ -1,0 +1,242 @@
+.terminal-workspace {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  color: #d3d6df;
+  background: #141519;
+  font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
+}
+
+.terminal-workspace-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 30px;
+  min-height: 30px;
+  padding: 0 8px 0 6px;
+  background: #101115;
+  border-bottom: 1px solid #262830;
+}
+
+.terminal-workspace-tabs {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+}
+
+.terminal-workspace-tab-wrap {
+  display: flex;
+  align-items: center;
+  max-width: 220px;
+  border-right: 1px solid #24262e;
+  color: #8f929e;
+}
+
+.terminal-workspace-tab-wrap.selected {
+  color: #e3e5ec;
+  background: #1b1d24;
+  box-shadow: inset 0 -1px 0 var(--blue);
+}
+
+.terminal-workspace-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  height: 100%;
+  padding: 0 4px 0 9px;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  font-family: inherit;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.terminal-workspace-tab-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.terminal-workspace-tab-close {
+  width: 18px;
+  height: 18px;
+  margin-right: 4px;
+  padding: 0;
+  color: #7b7f8b;
+  background: transparent;
+  border: 0;
+  border-radius: 3px;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.terminal-workspace-tab-close:hover {
+  color: #e6e8ee;
+  background: #2b2e37;
+}
+
+.terminal-status-dot {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 auto;
+  background: #6b6f7c;
+  border-radius: 50%;
+}
+
+.terminal-status-dot.running { background: #73c69c; }
+.terminal-status-dot.starting { background: #e6c07b; }
+.terminal-status-dot.exited { background: #7b7f8b; }
+.terminal-status-dot.error { background: #ff8f8f; }
+
+.terminal-workspace-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.terminal-workspace-cwd {
+  max-width: 150px;
+  overflow: hidden;
+  color: #6f7482;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.terminal-workspace-new {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  color: #b9bcc6;
+  background: #24262d;
+  border: 1px solid #333640;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.terminal-workspace-new:hover {
+  color: #f0f1f5;
+  background: #2f323c;
+}
+
+.terminal-workspace-body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background: #141519;
+}
+
+.terminal-workspace-pane {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.terminal-workspace-pane.hidden {
+  display: none;
+}
+
+.terminal-pane {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  padding: 4px 6px 4px 8px;
+}
+
+.terminal-xterm-host {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.terminal-xterm-host .xterm {
+  height: 100%;
+}
+
+.terminal-xterm-host .xterm-viewport {
+  background: transparent !important;
+  scrollbar-color: #3a3e4a transparent;
+  scrollbar-width: thin;
+}
+
+.terminal-workspace-notice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex: 1;
+  padding: 16px;
+  color: #838795;
+  font-size: 11px;
+  text-align: center;
+}
+
+.terminal-workspace-notice.error {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  color: #ffb0b0;
+  text-align: left;
+}
+
+.terminal-workspace-notice p {
+  max-width: 100%;
+  margin: 0;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+
+.terminal-workspace-notice button,
+.terminal-workspace-empty button,
+.terminal-workspace-exit button {
+  padding: 4px 9px;
+  color: #d9dbe3;
+  background: #2a2d36;
+  border: 1px solid #3a3e4a;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 10px;
+}
+
+.terminal-workspace-notice button:hover,
+.terminal-workspace-empty button:hover,
+.terminal-workspace-exit button:hover {
+  background: #343844;
+}
+
+.terminal-workspace-exit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  color: #a3a7b3;
+  background: #1b1d23;
+  border-bottom: 1px solid #2b2e37;
+  font-size: 10px;
+}
+
+.terminal-workspace-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 100%;
+  color: #7b7f8b;
+  font-size: 11px;
+}
+
+.terminal-workspace-empty p {
+  margin: 0;
+}
