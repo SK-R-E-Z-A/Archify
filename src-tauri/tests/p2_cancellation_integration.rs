@@ -78,7 +78,7 @@ async fn wait_for_state(
 /// result and elapsed time. Cancellation is triggered from the test task
 /// while `run_process` polls the watch receiver inside its own select loop.
 async fn run_and_cancel(args: &[&str], cancel_after_ms: u64) -> (String, Duration) {
-    let mut cmd = Command::new("cmd");
+    let mut cmd = Command::new(if cfg!(windows) { "cmd" } else { "sh" });
     cmd.args(args);
     let (tx, rx) = watch::channel(false);
     let start = Instant::now();
@@ -117,7 +117,12 @@ fn assert_cancelled_fast(result: &str, elapsed: Duration) {
 
 #[tokio::test]
 async fn p2_cancel_active_cli_process() {
-    let (err, elapsed) = run_and_cancel(&["/C", "ping -n 30 127.0.0.1 >nul"], 1500).await;
+    let args = if cfg!(windows) {
+        vec!["/C", "ping -n 30 127.0.0.1 >nul"]
+    } else {
+        vec!["-c", "sleep 30"]
+    };
+    let (err, elapsed) = run_and_cancel(&args, 1500).await;
     assert_cancelled_fast(&err, elapsed);
 }
 
@@ -163,11 +168,15 @@ async fn p2_cancel_idempotency_and_state_persistence() {
 #[tokio::test]
 async fn p2_process_tree_termination() {
     // A process that launches a nested child process.
-    let mut cmd = Command::new("cmd");
-    cmd.args([
-        "/C",
-        "start /b cmd /c ping -n 30 127.0.0.1 >nul & ping -n 30 127.0.0.1 >nul",
-    ]);
+    let mut cmd = Command::new(if cfg!(windows) { "cmd" } else { "sh" });
+    if cfg!(windows) {
+        cmd.args([
+            "/C",
+            "start /b cmd /c ping -n 30 127.0.0.1 >nul & ping -n 30 127.0.0.1 >nul",
+        ]);
+    } else {
+        cmd.args(["-c", "sh -c 'sleep 30' & sleep 30"]);
+    }
     let (tx, rx) = watch::channel(false);
     let start = Instant::now();
     let handle = tokio::spawn(async move {
@@ -189,11 +198,15 @@ async fn p2_process_tree_termination() {
 #[tokio::test]
 async fn p2_cancel_during_stdout_capture() {
     // Produce stdout slowly via ping (about 1 second per iteration).
-    let mut cmd = Command::new("cmd");
-    cmd.args([
-        "/C",
-        "for /L %i in (1,1,30) do (echo line_%i & ping -n 2 127.0.0.1 >nul)",
-    ]);
+    let mut cmd = Command::new(if cfg!(windows) { "cmd" } else { "sh" });
+    if cfg!(windows) {
+        cmd.args([
+            "/C",
+            "for /L %i in (1,1,30) do (echo line_%i & ping -n 2 127.0.0.1 >nul)",
+        ]);
+    } else {
+        cmd.args(["-c", "for i in $(seq 1 30); do echo line_$i; sleep 1; done"]);
+    }
     let (tx, rx) = watch::channel(false);
     let start = Instant::now();
     let handle = tokio::spawn(async move {
@@ -214,11 +227,18 @@ async fn p2_cancel_during_stdout_capture() {
 #[tokio::test]
 async fn p2_cancel_during_stderr_capture() {
     // Produce stderr slowly via ping (about 1 second per iteration).
-    let mut cmd = Command::new("cmd");
-    cmd.args([
-        "/C",
-        "for /L %i in (1,1,30) do (echo line_%i 1>&2 & ping -n 2 127.0.0.1 >nul)",
-    ]);
+    let mut cmd = Command::new(if cfg!(windows) { "cmd" } else { "sh" });
+    if cfg!(windows) {
+        cmd.args([
+            "/C",
+            "for /L %i in (1,1,30) do (echo line_%i 1>&2 & ping -n 2 127.0.0.1 >nul)",
+        ]);
+    } else {
+        cmd.args([
+            "-c",
+            "for i in $(seq 1 30); do echo line_$i 1>&2; sleep 1; done",
+        ]);
+    }
     let (tx, rx) = watch::channel(false);
     let start = Instant::now();
     let handle = tokio::spawn(async move {
@@ -342,7 +362,12 @@ async fn p2_cancel_during_retry_cycle() {
 
 #[tokio::test]
 async fn p2_cancel_during_long_running_process() {
-    let (err, elapsed) = run_and_cancel(&["/C", "ping -n 30 127.0.0.1 >nul"], 1500).await;
+    let args = if cfg!(windows) {
+        vec!["/C", "ping -n 30 127.0.0.1 >nul"]
+    } else {
+        vec!["-c", "sleep 30"]
+    };
+    let (err, elapsed) = run_and_cancel(&args, 1500).await;
     assert_cancelled_fast(&err, elapsed);
 }
 
