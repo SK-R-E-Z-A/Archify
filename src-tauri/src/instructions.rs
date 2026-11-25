@@ -813,7 +813,11 @@ mod tests {
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap()
             .as_nanos();
-        let d = std::env::temp_dir().join(format!(
+        let base = std::env::current_dir()
+            .unwrap_or_else(|_| PathBuf::from("."))
+            .join("target")
+            .join("scratch");
+        let d = base.join(format!(
             "archify_instr_{}_{}_{}",
             label,
             std::process::id(),
@@ -1060,7 +1064,7 @@ mod tests {
         let dir = temp_dir("scope_change");
         let project = dir.join("proj");
         fs::create_dir_all(&project).unwrap();
-        let root = project.to_string_lossy().to_string();
+        let root = dunce::canonicalize(&project).unwrap().to_string_lossy().to_string();
         let mut store = InstructionStoreFile::default();
         let rec = upsert_instruction(
             &mut store,
