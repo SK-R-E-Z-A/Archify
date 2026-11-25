@@ -2,9 +2,12 @@
 // Real run_process lifecycle integration with tracker
 // ---------------------------------------------------------------------------
 
+use archify_lib::agent_lifecycle::AgentLifecycleTracker;
+use archify_lib::providers::process_cli::run_process;
+
 #[tokio::test]
 async fn p1_run_process_basic_completion_emits_lifecycle_events() {
-    let mut tracker = AgentLifecycleTracker::default();
+    let mut _tracker = AgentLifecycleTracker::default();
 
     // Execute a simple successful command
     let mut cmd = tokio::process::Command::new(if cfg!(windows) { "cmd" } else { "sh" });
