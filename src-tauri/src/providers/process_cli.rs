@@ -214,7 +214,7 @@ async fn kill_process_tree(child: &mut tokio::process::Child, job: Option<&JobGu
 
 #[cfg(not(windows))]
 async fn kill_process_tree(child: &mut tokio::process::Child, _job: Option<&JobGuard>) {
-    use libc::{killpg, pid_t, setpgid};
+    use libc::{killpg, setpgid};
 
     let pid = child.id().expect("process has no id") as i32;
 
@@ -222,16 +222,16 @@ async fn kill_process_tree(child: &mut tokio::process::Child, _job: Option<&JobG
     // terminate the entire group.  This must happen before any descendants
     // are spawned; we do it immediately after spawn via the job supervisor.
     // We use setpgid(pid, pid) to create a new process group.
-    let _ = setpgid(pid, pid);
+    let _ = unsafe { setpgid(pid, pid) };
 
     // Send SIGTERM to the entire process group for graceful termination
-    let _ = killpg(pid, 15); // SIGTERM
+    let _ = unsafe { killpg(pid, 15) }; // SIGTERM
 
     // Wait with timeout for graceful termination
     let _ = timeout(Duration::from_secs(KILL_WAIT_TIMEOUT_SECS), child.wait()).await;
 
     // If the process is still running, force kill the entire group
-    let _ = killpg(pid, 9); // SIGKILL
+    let _ = unsafe { killpg(pid, 9) }; // SIGKILL
 }
 
 enum WaitOutcome {
