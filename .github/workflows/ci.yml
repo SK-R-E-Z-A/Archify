@@ -42,8 +42,7 @@ jobs:
             curl \
             wget \
             file \
-            libayatana-appindicator3-dev \
-            libwebkit2gtk-4.0-dev
+            libayatana-appindicator3-dev
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
