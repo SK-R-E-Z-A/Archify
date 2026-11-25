@@ -1,0 +1,99 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  rust:
+    name: Rust
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+          - os: windows-latest
+    defaults:
+      run:
+        working-directory: ./src-tauri
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: default
+          toolchain: stable
+
+      - name: Cache Cargo registry
+        uses: actions-rs/cache@v1
+        with:
+          key: cargo-registry-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            cargo-registry-${{ runner.os }}-
+
+      - name: Cache Cargo index
+        uses: actions-rs/cache@v1
+        with:
+          key: cargo-index-${{ runner.os }}-
+          path: ~/.cache/cc
+
+      - name: cargo fmt check
+        run: cargo fmt --manifest-path Cargo.toml --check
+
+      - name: cargo check
+        run: cargo check --manifest-path Cargo.toml
+
+      - name: cargo test
+        run: cargo test --manifest-path Cargo.toml --all-targets
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript check
+        run: npx tsc --noEmit
+
+      - name: Vitest test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+  doctor:
+    name: Doctor (preflight)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run doctor
+        run: npm run doctor
+
+  yaml-lint:
+    name: Lint YAML
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install yamllint
+        run: pip install yamllint
+
+      - name: Lint YAML files
+        run: yamllint "**/*.yaml" "**/*.yml" 2>/dev/null || echo "No YAML files found"
