@@ -223,10 +223,7 @@ async fn real_agent_opencode_ollama_success() {
         "At least one verification should pass"
     );
     if let Some(rr) = &last_iter.reviewer_response {
-        assert_eq!(
-            rr.verdict,
-            archify_lib::models::ReviewerVerdict::Complete
-        );
+        assert_eq!(rr.verdict, archify_lib::models::ReviewerVerdict::Complete);
     }
 }
 

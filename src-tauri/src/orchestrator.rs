@@ -763,13 +763,11 @@ impl Orchestrator {
         let is_test_mode =
             self.config.planner_type == "test" || self.config.executor_type == "test";
         // Empty environment variables must not be reported as a configured key.
-        let env_key_present = PROVIDER_CONFIG_KEYS
-            .iter()
-            .any(|name| {
-                std::env::var(name)
-                    .map(|value| !value.trim().is_empty())
-                    .unwrap_or(false)
-            });
+        let env_key_present = PROVIDER_CONFIG_KEYS.iter().any(|name| {
+            std::env::var(name)
+                .map(|value| !value.trim().is_empty())
+                .unwrap_or(false)
+        });
         let has_api_key = self
             .config
             .api_key
@@ -1359,13 +1357,11 @@ impl Orchestrator {
                 .api_key
                 .as_ref()
                 .map_or(false, |key| !key.trim().is_empty())
-                || PROVIDER_CONFIG_KEYS
-                    .iter()
-                    .any(|name| {
-                        std::env::var(name)
-                            .map(|value| !value.trim().is_empty())
-                            .unwrap_or(false)
-                    });
+                || PROVIDER_CONFIG_KEYS.iter().any(|name| {
+                    std::env::var(name)
+                        .map(|value| !value.trim().is_empty())
+                        .unwrap_or(false)
+                });
 
             if !has_key && !is_local_endpoint_url(endpoint) {
                 return Err(format!(

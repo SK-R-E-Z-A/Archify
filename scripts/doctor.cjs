@@ -7,7 +7,7 @@
  * Run with: npm run doctor
  */
 
-const { execSync } = require("child_process");
+const { execSync, execFileSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 const os = require("os");
@@ -42,7 +42,7 @@ const nodeMajor = parseInt(nodeVersion.replace("v", "").split(".")[0]);
 check(
   "Node.js availability",
   !!nodeVersion,
-  `v${nodeVersion}`
+  nodeVersion
 );
 check(
   "npm availability",
@@ -52,7 +52,7 @@ check(
 warn(
   "Node.js version",
   nodeMajor >= 20,
-  `Node ${nodeMajor.x} (recommended: 20+)`
+  `Node ${nodeMajor} (recommended: 20+)`
 );
 
 // -------------------------------------------------------
@@ -62,14 +62,14 @@ let rustAvailable = false;
 let rustStr = "";
 try {
   const cargoOutput = execSync("cargo --version", { encoding: "utf-8" });
-  rustStr = cargoOutput.to_string().trim();
+  rustStr = cargoOutput.trim();
   if (rustStr.length > 0) {
     rustAvailable = true;
   }
 } catch (e) {
   // cargo not found
 }
-check("Rust/Cargo availability", rustAvailable, rustStr || "not found");
+warn("Rust/Cargo availability", rustAvailable, rustStr || "not found");
 if (rustAvailable && typeof rustStr === "string" && rustStr.length > 3) {
   warn("Rust toolchain version", rustStr.includes("rustc"), rustStr);
 }
@@ -81,14 +81,14 @@ let tauriAvailable = false;
 let tauriStr = "";
 try {
   const tauriOutput = execSync("tauri --version", { encoding: "utf-8" });
-  tauriStr = tauriOutput.to_string().trim();
+  tauriStr = tauriOutput.trim();
   if (tauriStr.length > 0) {
     tauriAvailable = true;
   }
 } catch (e) {
   // tauri not found
 }
-check("Tauri CLI availability", tauriAvailable, tauriStr || "not found");
+warn("Tauri CLI availability", tauriAvailable, tauriStr || "not found");
 if (tauriAvailable && typeof tauriStr === "string" && tauriStr.length > 3) {
   warn("Tauri version", tauriStr.includes("2."), tauriStr);
 }
@@ -109,8 +109,8 @@ try {
   makeAvailable = true;
 } catch {}
 
-check("cmake availability", cmakeAvailable, cmakeAvailable ? "found" : "not found");
-check("make availability", makeAvailable, makeAvailable ? "found" : "not found");
+warn("cmake availability", cmakeAvailable, cmakeAvailable ? "found" : "not found");
+warn("make availability", makeAvailable, makeAvailable ? "found" : "not found");
 
 // -------------------------------------------------------
 // Coding-agent CLI installations
@@ -134,32 +134,39 @@ try {
   omniflightAvailable = true;
 } catch {}
 
-check("Claude Code CLI availability", claudeAvailable, claudeAvailable ? "found" : "not found");
-check("Codex CLI availability", codexAvailable, codexAvailable ? "found" : "not found");
-check("OmniFlight CLI availability", omniflightAvailable, omniflightAvailable ? "found" : "not found");
+warn("Claude Code CLI availability", claudeAvailable, claudeAvailable ? "found" : "not found");
+warn("Codex CLI availability", codexAvailable, codexAvailable ? "found" : "not found");
+warn("OmniFlight CLI availability", omniflightAvailable, omniflightAvailable ? "found" : "not found");
 
 // -------------------------------------------------------
 // Agent executable resolution
 // -------------------------------------------------------
 let processCliExecutable = "";
 try {
-  const whichResult = execSync("which claude 2>/dev/null || echo 'not-found'", {
+  const cmd = process.platform === "win32" ? "where.exe" : "which";
+  const result = execFileSync(cmd, ["claude"], {
     encoding: "utf-8",
+    timeout: 5000,
+    stdio: ["ignore", "pipe", "ignore"],
   });
-  processCliExecutable = whichResult.trim();
+  if (result) {
+    const lines = result.trim().split(/\r?\n/);
+    if (lines.length > 0 && lines[0].trim()) {
+      processCliExecutable = lines[0].trim();
+    }
+  }
 } catch {}
-
-check(
+warn(
   "Process CLI executable resolution",
-  processCliExecutable !== "not-found",
-  processCliExecutable !== "not-found" ? `found at: ${processCliExecutable}` : ""
+  processCliExecutable !== "",
+  processCliExecutable ? `found at: ${processCliExecutable}` : ""
 );
 
 // -------------------------------------------------------
 // Provider configuration availability
 // -------------------------------------------------------
 const configPath = path.join(os.homedir(), ".config", "archify", "provider_config.json");
-check(
+warn(
   "Provider config directory exists",
   fs.existsSync(configPath),
   fs.existsSync(configPath) ? "found" : "not found"

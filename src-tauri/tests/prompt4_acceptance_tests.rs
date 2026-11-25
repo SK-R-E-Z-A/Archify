@@ -1,6 +1,4 @@
-use archify_lib::models::{
-    ActivityFilter, ActivityRecord, NotificationFilter, NotificationRecord,
-};
+use archify_lib::models::{ActivityFilter, ActivityRecord, NotificationFilter, NotificationRecord};
 use archify_lib::workspace::Workspace;
 use tempfile::tempdir;
 

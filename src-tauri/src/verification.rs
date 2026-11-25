@@ -1255,9 +1255,7 @@ mod tests {
         assert!(
             assess_completion(&criteria, Some(&reviewer), &[verification.clone()], true).passed()
         );
-        assert!(
-            assess_completion(&criteria, Some(&reviewer), &[], false).passed()
-        );
+        assert!(assess_completion(&criteria, Some(&reviewer), &[], false).passed());
 
         let mut malformed = verification;
         malformed.exit_code = None;

@@ -1011,7 +1011,10 @@ impl Workspace {
         let result = project_id.clone();
         core.save();
         core.emit_workspace();
-        Ok(core.project(&result).cloned().ok_or_else(|| "Project not found".to_string())?)
+        Ok(core
+            .project(&result)
+            .cloned()
+            .ok_or_else(|| "Project not found".to_string())?)
     }
 
     pub fn new(app_handle: Option<AppHandle>) -> Self {
@@ -1387,9 +1390,15 @@ impl Workspace {
             project.pinned = pinned;
         }
         if let Some(description_value) = description {
-            project.description = if description_value.trim().is_empty() { None } else { Some(description_value.trim().to_string()) };
+            project.description = if description_value.trim().is_empty() {
+                None
+            } else {
+                Some(description_value.trim().to_string())
+            };
         }
-        if let Some(tags_value) = tags { project.tags = tags_value; }
+        if let Some(tags_value) = tags {
+            project.tags = tags_value;
+        }
         project.last_opened_at = chrono::Utc::now().to_rfc3339();
         let updated = project.clone();
         core.save();
@@ -5661,10 +5670,7 @@ fn normalize_profile_config(
     existing: &ProviderConfig,
     input: ProviderConfigInput,
 ) -> Result<ProviderConfig, String> {
-    let scratch = std::env::temp_dir().join(format!(
-        "archify-profile-{}.json",
-        Uuid::new_v4()
-    ));
+    let scratch = std::env::temp_dir().join(format!("archify-profile-{}.json", Uuid::new_v4()));
     let mut orchestrator =
         Orchestrator::new_isolated(None, scratch.with_extension("history"), scratch.clone());
     orchestrator.config = existing.clone();

@@ -8,7 +8,10 @@ use std::path::PathBuf;
 use uuid::Uuid;
 
 fn make_temp_dir() -> PathBuf {
-    let dir = env::current_dir().unwrap().join("target").join(format!("archify_active_project_test_{}", Uuid::new_v4()));
+    let dir = env::current_dir()
+        .unwrap()
+        .join("target")
+        .join(format!("archify_active_project_test_{}", Uuid::new_v4()));
     if let Err(e) = std::fs::create_dir_all(&dir) {
         panic!("Failed to create temp directory: {}", e);
     }

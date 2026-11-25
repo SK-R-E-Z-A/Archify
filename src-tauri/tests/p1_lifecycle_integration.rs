@@ -3,9 +3,7 @@
 //! Tests that verify the AgentLifecycleTracker correctly observes real
 //! executor process lifecycle events end-to-end.
 
-use archify_lib::agent_lifecycle::{
-    AgentLifecycleTracker, ProcessState, TrackerConfig,
-};
+use archify_lib::agent_lifecycle::{AgentLifecycleTracker, ProcessState, TrackerConfig};
 use archify_lib::models::TaskState;
 use archify_lib::orchestrator::{Orchestrator, TaskCreationOptions, create_task};
 use archify_lib::providers::process_cli::{ProcessCliExecutor, run_process};
@@ -75,9 +73,7 @@ async fn p1_lifecycle_tracker_failure_and_timeout_states() {
     let failed = tracker.record_failed("boom".to_string());
     assert_eq!(
         failed.event_type,
-        archify_lib::agent_lifecycle::LifecycleEventType::ProcessFailed(
-            "boom".to_string()
-        )
+        archify_lib::agent_lifecycle::LifecycleEventType::ProcessFailed("boom".to_string())
     );
     assert_eq!(tracker.state(), &ProcessState::Failed("boom".to_string()));
 
