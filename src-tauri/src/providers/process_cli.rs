@@ -214,9 +214,9 @@ async fn kill_process_tree(child: &mut tokio::process::Child, job: Option<&JobGu
 
 #[cfg(not(windows))]
 async fn kill_process_tree(child: &mut tokio::process::Child, _job: Option<&JobGuard>) {
-    use libc::{PID_T, killpg, setpgid};
+    use libc::{pid_t, killpg, setpgid};
 
-    let pid = child.id() as i32;
+    let pid = child.id().expect("process has no id") as i32;
 
     // Set the child's process group ID to its own PID so killpg can
     // terminate the entire group.  This must happen before any descendants
